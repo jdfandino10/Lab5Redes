@@ -15,6 +15,11 @@ public class DownloadManager extends Thread{
 		while (!c.doneDownload()){
 			int p = c.getPacketIndexToGet();
 			try {
+				if(c.isPaused()) {
+					synchronized(this){
+						this.wait();
+					}
+				}
 				c.requestPacket(p);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

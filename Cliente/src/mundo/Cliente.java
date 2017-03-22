@@ -38,6 +38,7 @@ public class Cliente {
 	private int actualPacket;
 	private DownloadManager dm;
 	private boolean downloadStart;
+	private boolean paused;
 	private FileOutputStream outStream;
 	
 	public Cliente() {
@@ -47,6 +48,7 @@ public class Cliente {
 	
 	public void startDownload() throws Exception{
 		if (downloadStart) {
+			System.out.println("va a resumir descarga");
 			resumeDownload();
 		}else {
 			dm = new DownloadManager(this);
@@ -62,6 +64,11 @@ public class Cliente {
 		packetSize=0;
 		downloadStart=false;
 		outStream = null;
+		paused = false;
+	}
+	
+	public boolean downloadHasStarted() {
+		return downloadStart;
 	}
 	
 	public boolean connect() {
@@ -144,22 +151,25 @@ public class Cliente {
 		reset();
 	}
 	
-	public void pauseDownload() {
+	public synchronized void pauseDownload() {
 		out.println(PAUSE);
-		try {
-			dm.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		paused = true;
 	}
 	
-	public void resumeDownload() throws Exception{
-		if (!goodConnection() && !connect()) throw new Exception("No se puede conectar al servidor");
-		out.println(selectedFile);
-		String numPackets = in.readLine();
-		String totBytes = in.readLine();
-		dm.notify();
+	public synchronized boolean isPaused() {
+		return paused;
+	}
+	
+	public synchronized void resumeDownload() throws Exception{
+		paused = false;
+		try{
+			synchronized(dm) {
+				dm.notify();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			throw new Exception ("No pudo reestablecerse la conexión");
+		}
 	}
 	
 	public void closeConnection(){

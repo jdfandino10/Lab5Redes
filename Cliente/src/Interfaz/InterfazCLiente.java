@@ -137,7 +137,7 @@ public class InterfazCLiente extends JFrame {
      public void startDownload()
      {
     	 try {
-			cliente.selectFile(panelArchivos.getArchivoSeleccionado());
+			if(!cliente.downloadHasStarted()) cliente.selectFile(panelArchivos.getArchivoSeleccionado());
 			cliente.startDownload();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -152,6 +152,7 @@ public class InterfazCLiente extends JFrame {
 			cliente.pauseDownload();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
 		}
      }
