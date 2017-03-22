@@ -3,12 +3,16 @@ package mundo;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.concurrent.Callable;
@@ -22,10 +26,6 @@ public class Connection extends Thread {
 	public static final int PACKET_SIZE = 8000;
 	public static final int MINUTE_LIMIT = 5;
 	public static final String DATA = "./data/";
-	public static final String FILE_A = "5mb.jpg";
-	public static final String FILE_B = "20MB.zip";
-	public static final String FILE_C = "50MB.zip";
-	private static final String[] FILES = {FILE_A, FILE_B, FILE_C};
 	
 	public static final String HELLO = "hello";
 	public static final String CONTINUE = "continue";
@@ -43,9 +43,10 @@ public class Connection extends Thread {
 	private ServerSocket sk;
 	private BufferedReader br;
 	private OutputStream os;
-	private byte[] fileBytes;
 	private int totPacket;
+	private long totBytes;
 	private Socket socket;
+	private FileChannel channel;
 
 	
 	public Connection(ServerSocket sk){
@@ -59,7 +60,9 @@ public class Connection extends Thread {
 				System.out.println("Conexion Establecida");
 				br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				os = socket.getOutputStream();
-				readMsg();
+				while(!socket.isClosed()){
+					readMsg();	
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -98,7 +101,7 @@ public class Connection extends Thread {
 		if (HELLO.equals(msg)){
 			sendOptions();
 		}else if (PAUSE.equals(msg)) {
-			readMsg();
+//			readMsg();
 		}else if (msg.startsWith(CONTINUE)) {
 			sendPacket(Integer.parseInt(msg.split(":")[1]));
 		}else if (isFileRequest(msg)) {
@@ -120,20 +123,19 @@ public class Connection extends Thread {
 	private void sendOk() {
 		PrintWriter out = new PrintWriter(os, true);
 		out.println(OK);
-		System.out.println(OK);
-		readMsg();
 	}
 
 	private void sendError(String msg) {
 		PrintWriter out = new PrintWriter(os, true);
 		out.println(ERROR);
-		readMsg();
 	}
 	
 	private boolean isFileRequest(String msg) {
 		boolean isFile = false;
-		for(int i=0; i<FILES.length && !isFile; i++){
-			isFile = msg.equals(FILES[i]);
+		File dir = new File(DATA);
+		String[] files = dir.list();
+		for(int i=0; i<files.length && !isFile; i++){
+			isFile = msg.equals(files[i]);
 		}
 		return isFile;
 	}
@@ -141,12 +143,13 @@ public class Connection extends Thread {
 	private void sendOptions() {
 		PrintWriter out = new PrintWriter(os, true);
 		String options = "";
-		for(int i=0; i<FILES.length; i++){
-			options+=FILES[i];
-			if(i!=FILES.length-1) options+=";";
+		File dir = new File(DATA);
+		String[] files = dir.list();
+		for(int i=0; i<files.length; i++){
+			options+=files[i];
+			if(i!=files.length-1) options+=";";
 		}
 		out.println(options);
-		readMsg();
 	}
 	
 	private void sendPacket(int packetNum) {
@@ -154,7 +157,7 @@ public class Connection extends Thread {
 			DataOutputStream out = new DataOutputStream(os);
 			int off = packetNum*PACKET_SIZE;
 			int len = PACKET_SIZE;
-			len = Math.min(len, fileBytes.length-off);
+			len = (int) Math.min(len, totBytes-off);
 			OutputStream console = new OutputStream() {
 				
 				@Override
@@ -163,15 +166,21 @@ public class Connection extends Thread {
 					System.out.println(arg0);
 				}
 			};
-			os.write(fileBytes, off, len);
+			System.out.println("len: "+len);
+			System.out.println("totBytes: "+totBytes);
+			System.out.println("off: "+off);
+			MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, off, len);
+			ByteBuffer buf = buffer.asReadOnlyBuffer();
+			byte[] b = new byte[buf.remaining()];
+			buf.get(b);
+			os.write(b);
 			os.flush();
-//			console.write(fileBytes, off, len);
+//			console.write(b);
 //			console.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		readMsg();
 		
 	}
 	
@@ -179,17 +188,17 @@ public class Connection extends Thread {
 		try {
 			File f = new File(DATA+fileName);
 			PrintWriter pw = new PrintWriter(os, true);
-			fileBytes = Files.readAllBytes(f.toPath());
-			totPacket = fileBytes.length/PACKET_SIZE;
-			if (fileBytes.length%PACKET_SIZE>0) totPacket++;
+			channel = new FileInputStream(f).getChannel();
+			totBytes = f.length();
+			totPacket = (int) (totBytes/PACKET_SIZE);
+			if (totBytes%PACKET_SIZE>0) totPacket++;
 			pw.println(PACKETS+SEPARATOR+totPacket);
-			pw.println(TOTBYTES+SEPARATOR+fileBytes.length);
+			pw.println(TOTBYTES+SEPARATOR+totBytes);
 			pw.println(PACKSIZE+SEPARATOR+PACKET_SIZE);
-			System.out.println("Packets: "+ totPacket + " - Bytes: "+fileBytes.length +" - PSize: " + PACKET_SIZE);
+			System.out.println("Packets: "+ totPacket + " - Bytes: "+totBytes +" - PSize: " + PACKET_SIZE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		readMsg();
 	}
 }
 

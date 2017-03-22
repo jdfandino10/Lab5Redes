@@ -33,12 +33,12 @@ public class Cliente {
 	private BufferedReader in;
 	private String selectedFile;
 	private int packets;
-	private int bytes;
+	private long bytes;
 	private int packetSize;
-	private byte[] file;
 	private int actualPacket;
 	private DownloadManager dm;
 	private boolean downloadStart;
+	private FileOutputStream outStream;
 	
 	public Cliente() {
 		reset();
@@ -60,8 +60,8 @@ public class Cliente {
 		packets=0;
 		bytes=0;
 		packetSize=0;
-		file=null;
 		downloadStart=false;
+		outStream = null;
 	}
 	
 	public boolean connect() {
@@ -117,11 +117,12 @@ public class Cliente {
 		String totBytes = in.readLine();
 		String packSize = in.readLine();
 		packets = Integer.parseInt(numPackets.split(":")[1]);
-		bytes = Integer.parseInt(totBytes.split(":")[1]);
+		bytes = Long.parseLong(totBytes.split(":")[1]);
 		packetSize = Integer.parseInt(packSize.split(":")[1]);
-		file = new byte[bytes];
 		System.out.println("Packets: "+ packets + " - Bytes: "+bytes +" - PSize: " + packetSize);
-		
+		File f = new File(DATA+selectedFile);
+		f.createNewFile();
+		outStream = new FileOutputStream(f);
 	}
 	
 	
@@ -130,16 +131,15 @@ public class Cliente {
 		out.println(CONTINUE+":"+packetIndex);
 		DataInputStream flujo = new DataInputStream(server.getInputStream());
 		int off = packetIndex*packetSize;
-		int len = Math.min(packetSize, bytes-off);
-		flujo.read(file, off, len);
+		int len = (int) Math.min(packetSize, bytes-off);
+		byte[] b = new byte[len];
+		flujo.read(b, 0, len);
+		outStream.write(b);
+		outStream.flush();
 		actualPacket++;
 	}
 	
 	public void writeFile() throws IOException {
-		File f = new File(DATA+selectedFile);
-		f.createNewFile();
-		FileOutputStream outStream = new FileOutputStream(f);
-		outStream.write(file);
 		outStream.close();
 		reset();
 	}
