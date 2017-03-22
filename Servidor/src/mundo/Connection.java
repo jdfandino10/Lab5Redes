@@ -34,6 +34,7 @@ public class Connection extends Thread {
 	public static final String TOTBYTES = "totbytes";
 	public static final String ERROR = "error";
 	public static final String SEPARATOR = ":";
+
 	public static final String HEARTBEAT = "hb";
 	public static final String OK = "ok";
 	public static final String BYE = "bye";
@@ -44,6 +45,7 @@ public class Connection extends Thread {
 	private byte[] fileBytes;
 	private int totPacket;
 	private Socket socket;
+
 	
 	public Connection(ServerSocket sk){
 		this.sk=sk;
@@ -115,7 +117,7 @@ public class Connection extends Thread {
 		PrintWriter out = new PrintWriter(os, true);
 		out.println(OK);
 	}
-	
+
 	private void sendError(String msg) {
 		PrintWriter out = new PrintWriter(os, true);
 		out.println(ERROR);
