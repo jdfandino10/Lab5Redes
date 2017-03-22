@@ -2,11 +2,11 @@ package mundo;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Cliente {
 	
@@ -16,6 +16,7 @@ public class Cliente {
 	public static final String OK = "ok";
 	public static final String CONTINUE = "continue";
 	public static final String BYE = "bye";
+	public static final String DATA = "./data/";
 	
 	private static final String HOST = "localhost";
 	private static final int PORT = 8081;
@@ -24,8 +25,6 @@ public class Cliente {
 	private Socket server;
 	private PrintWriter out;
 	private BufferedReader in;
-	private String downloadState;
-	private String connectionState;
 	private String selectedFile;
 	private int packets;
 	private int bytes;
@@ -34,7 +33,15 @@ public class Cliente {
 	private int actualPacket;
 	
 	public Cliente() {
+		reset();
+	}
+	
+	public void reset() {
 		actualPacket=0;
+		packets=0;
+		bytes=0;
+		packetSize=0;
+		file=null;
 	}
 	
 	public boolean connect() {
@@ -103,8 +110,14 @@ public class Cliente {
 		actualPacket++;
 	}
 	
+	public void writeFile() throws IOException {
+		FileOutputStream outStream = new FileOutputStream(DATA+selectedFile);
+		outStream.write(bytes);
+		outStream.close();
+		reset();
+	}
+	
 	public void pauseDownload() {
-		downloadState = PAUSE;
 		out.println(PAUSE);
 	}
 	
@@ -123,5 +136,10 @@ public class Cliente {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean doneDownload() {
+		if(packets == 0) return false;
+		return packets==actualPacket;
 	}
 }
