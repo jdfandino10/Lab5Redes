@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 import org.w3c.dom.DOMConfiguration;
 
@@ -138,7 +139,7 @@ public class Cliente {
 		File f = new File(DATA+selectedFile);
 		f.createNewFile();
 		FileOutputStream outStream = new FileOutputStream(f);
-		outStream.write(bytes);
+		outStream.write(file);
 		outStream.close();
 		reset();
 	}
