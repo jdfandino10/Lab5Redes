@@ -19,6 +19,7 @@ public class Cliente {
 	public static final String HEARTBEAT = "hb";
 	public static final String OK = "ok";
 	public static final String CONTINUE = "continue";
+	public static final String PACKSIZE = "packsize";
 	public static final String BYE = "bye";
 	public static final String DATA = "./data/";
 	
@@ -113,9 +114,10 @@ public class Cliente {
 		selectedFile = fileName;
 		String numPackets = in.readLine();
 		String totBytes = in.readLine();
+		String packSize = in.readLine();
 		packets = Integer.parseInt(numPackets.split(":")[1]);
 		bytes = Integer.parseInt(totBytes.split(":")[1]);
-		packetSize = (bytes-(bytes%packets))/packets;
+		packetSize = Integer.parseInt(packSize.split(":")[1]);
 		file = new byte[bytes];
 		System.out.println("Packets: "+ packets + " - Bytes: "+bytes +" - PSize: " + packetSize);
 		

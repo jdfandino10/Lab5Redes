@@ -31,6 +31,7 @@ public class Connection extends Thread {
 	public static final String CONTINUE = "continue";
 	public static final String PAUSE = "pause";
 	public static final String PACKETS = "packets";
+	public static final String PACKSIZE = "packsize";
 	public static final String TOTBYTES = "totbytes";
 	public static final String ERROR = "error";
 	public static final String SEPARATOR = ":";
@@ -183,6 +184,7 @@ public class Connection extends Thread {
 			if (fileBytes.length%PACKET_SIZE>0) totPacket++;
 			pw.println(PACKETS+SEPARATOR+totPacket);
 			pw.println(TOTBYTES+SEPARATOR+fileBytes.length);
+			pw.println(PACKSIZE+SEPARATOR+PACKET_SIZE);
 			System.out.println("Packets: "+ totPacket + " - Bytes: "+fileBytes.length +" - PSize: " + PACKET_SIZE);
 		} catch (IOException e) {
 			e.printStackTrace();
