@@ -34,12 +34,16 @@ public class Connection extends Thread {
 	public static final String TOTBYTES = "totbytes";
 	public static final String ERROR = "error";
 	public static final String SEPARATOR = ":";
+	public static final String HEARTBEAT = "hb";
+	public static final String OK = "ok";
+	public static final String BYE = "bye";
 	
 	private ServerSocket sk;
 	private BufferedReader br;
 	private OutputStream os;
 	private byte[] fileBytes;
 	private int totPacket;
+	private Socket socket;
 	
 	public Connection(ServerSocket sk){
 		this.sk=sk;
@@ -48,7 +52,7 @@ public class Connection extends Thread {
 	public void run() {
 		while(true){
 			try {
-				Socket socket = sk.accept();
+				socket = sk.accept();
 				br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				os = socket.getOutputStream();
 				readMsg();
@@ -75,6 +79,11 @@ public class Connection extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			handler.cancel(true);
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 		executor.shutdownNow();
 	}
@@ -88,9 +97,23 @@ public class Connection extends Thread {
 			sendPacket(Integer.parseInt(msg.split(":")[1]));
 		}else if (isFileRequest(msg)) {
 			setFile(msg);
+		}else if (msg.equals(HEARTBEAT)) {
+			sendOk();
+		}else if (msg.equals(BYE)) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}else {
 			sendError(msg);
 		}
+	}
+	
+	private void sendOk() {
+		PrintWriter out = new PrintWriter(os, true);
+		out.println(OK);
 	}
 	
 	private void sendError(String msg) {
