@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class Connection extends Thread {
 	
 	public static final int PACKET_SIZE = 8000;
-	public static final int MINUTE_LIMIT = 5;
+	public static final int MINUTE_LIMIT = 1;
 	public static final String DATA = "./data/";
 	
 	public static final String HELLO = "hello";

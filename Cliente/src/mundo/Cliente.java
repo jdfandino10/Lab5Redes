@@ -161,6 +161,11 @@ public class Cliente {
 	}
 	
 	public synchronized void resumeDownload() throws Exception{
+		if (!goodConnection() && !connect()) throw new Exception("No se puede conectar al servidor");
+		out.println(selectedFile);
+		in.readLine();
+		in.readLine();
+		in.readLine();
 		paused = false;
 		try{
 			synchronized(dm) {
