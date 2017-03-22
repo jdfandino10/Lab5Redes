@@ -65,6 +65,7 @@ public class InterfazCLiente extends JFrame {
      * Es el panel donde est�n los botones para los puntos de extensi�n
      */
     private PanelExtension panelExtension;
+    
 
  
 
@@ -83,7 +84,7 @@ public class InterfazCLiente extends JFrame {
        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Cliente FTP");
-        setExtendedState(MAXIMIZED_BOTH);
+        setSize(500, 700);
         setVisible(true);
         setResizable(true);
 
@@ -108,6 +109,10 @@ public class InterfazCLiente extends JFrame {
 
         actualizarListaArchivos();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        setSize(500, 700);
+        setVisible(true);
+        setResizable(true);
 
     }
 
@@ -118,9 +123,40 @@ public class InterfazCLiente extends JFrame {
      * Actualiza la lista de perros mostrada.
      */
     private void actualizarListaArchivos() {
-//        panelArchivos.refrescarLista(cliente.darArchivos);
+    	System.out.println("entro");
+        try {
+        	String[] files = cliente.requestFiles();
+        	System.out.println(files);
+        	panelArchivos.refrescarLista(files);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+		}
 
     }
+    
+     public void startDownload()
+     {
+    	 try {
+			cliente.selectFile(panelArchivos.getArchivoSeleccionado());
+			cliente.startDownload();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(this, e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+		}
+     }
+     
+     
+     public void stopDownload()
+     {
+    	 try {
+			cliente.pauseDownload();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(this, e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+		}
+     }
+     
+     
 
    
    
@@ -132,6 +168,6 @@ public class InterfazCLiente extends JFrame {
     
     public static void main(String[] args) {
         InterfazCLiente interfaz = new InterfazCLiente();
-        
+      
     }
 }

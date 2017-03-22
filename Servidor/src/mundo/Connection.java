@@ -55,6 +55,7 @@ public class Connection extends Thread {
 		while(true){
 			try {
 				socket = sk.accept();
+				System.out.println("Conexion Establecida");
 				br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				os = socket.getOutputStream();
 				readMsg();
@@ -71,11 +72,13 @@ public class Connection extends Thread {
 		    @Override
 		    public String call() throws Exception {
 		        return br.readLine();
+		        
 		    }
 		});
 		String msg;
 		try {
 			msg = handler.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+			System.out.println(msg);
 			processMsg(msg);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -116,11 +119,14 @@ public class Connection extends Thread {
 	private void sendOk() {
 		PrintWriter out = new PrintWriter(os, true);
 		out.println(OK);
+		System.out.println(OK);
+		readMsg();
 	}
 
 	private void sendError(String msg) {
 		PrintWriter out = new PrintWriter(os, true);
 		out.println(ERROR);
+		readMsg();
 	}
 	
 	private boolean isFileRequest(String msg) {
@@ -138,7 +144,8 @@ public class Connection extends Thread {
 			options+=FILES[i];
 			if(i!=FILES.length-1) options+=";";
 		}
-		out.println(options);			
+		out.println(options);
+		readMsg();
 	}
 	
 	private void sendPacket(int packetNum) {
@@ -147,12 +154,23 @@ public class Connection extends Thread {
 			int off = packetNum*PACKET_SIZE;
 			int len = PACKET_SIZE;
 			len = Math.min(len, fileBytes.length-off);
+			OutputStream console = new OutputStream() {
+				
+				@Override
+				public void write(int arg0) throws IOException {
+					// TODO Auto-generated method stub
+					System.out.println(arg0);
+				}
+			};
 			os.write(fileBytes, off, len);
 			os.flush();
+//			console.write(fileBytes, off, len);
+//			console.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		readMsg();
 		
 	}
 	
@@ -165,9 +183,11 @@ public class Connection extends Thread {
 			if (fileBytes.length%PACKET_SIZE>0) totPacket++;
 			pw.println(PACKETS+SEPARATOR+totPacket);
 			pw.println(TOTBYTES+SEPARATOR+fileBytes.length);
+			System.out.println("Packets: "+ totPacket + " - Bytes: "+fileBytes.length +" - PSize: " + PACKET_SIZE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		readMsg();
 	}
 }
 

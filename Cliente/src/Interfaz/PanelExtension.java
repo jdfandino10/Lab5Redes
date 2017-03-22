@@ -115,13 +115,13 @@ public class PanelExtension extends JPanel implements ActionListener
         {
         	botonComenzarDescarga.setEnabled(false);
         	botonDetenerDescarga.setEnabled(true);
-           // principal.mostrarDialogoAgregarAnimal();
+        	principal.startDownload();
         }
         else if( DETENER.equals( comando ) )
         {
         	botonComenzarDescarga.setEnabled(true);
         	botonDetenerDescarga.setEnabled(false);
-           // principal.mostrarDialogoAgregarFinca();;
+            principal.stopDownload();
         }
     
     }

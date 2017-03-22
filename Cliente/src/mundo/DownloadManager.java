@@ -14,6 +14,7 @@ public class DownloadManager extends Thread{
 		boolean error = false;
 		while (!c.doneDownload()){
 			int p = c.getPacketIndexToGet();
+			System.out.println("va a descargar el paquete "+ p);
 			try {
 				c.requestPacket(p);
 			} catch (Exception e) {

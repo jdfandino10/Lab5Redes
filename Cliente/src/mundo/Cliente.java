@@ -2,14 +2,18 @@ package mundo;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.w3c.dom.DOMConfiguration;
+
 public class Cliente {
 	
+	public static final String HELLO = "hello";
 	public static final String PAUSE = "pause";
 	public static final String DOWNLOADING = "downloading";
 	public static final String HEARTBEAT = "hb";
@@ -19,7 +23,7 @@ public class Cliente {
 	public static final String DATA = "./data/";
 	
 	private static final String HOST = "localhost";
-	private static final int PORT = 8081;
+	private static final int PORT = 8010;
 	
 	
 	private Socket server;
@@ -31,9 +35,22 @@ public class Cliente {
 	private int packetSize;
 	private byte[] file;
 	private int actualPacket;
+	private DownloadManager dm;
+	private boolean downloadStart;
 	
 	public Cliente() {
 		reset();
+		connect();
+	}
+	
+	public void startDownload() throws Exception{
+		if (downloadStart) {
+			resumeDownload();
+		}else {
+			dm = new DownloadManager(this);
+			dm.start();
+			downloadStart = true;
+		}
 	}
 	
 	public void reset() {
@@ -42,6 +59,7 @@ public class Cliente {
 		bytes=0;
 		packetSize=0;
 		file=null;
+		downloadStart=false;
 	}
 	
 	public boolean connect() {
@@ -51,6 +69,7 @@ public class Cliente {
 			out = new PrintWriter(server.getOutputStream(), true);
 			return true;
 		}catch(Exception e){
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -84,6 +103,7 @@ public class Cliente {
 	
 	public String[] requestFiles() throws Exception {
 		if (!goodConnection() && !connect()) throw new Exception("No se puede conectar al servidor");
+		out.println(HELLO);
 		return in.readLine().split(";");
 	}
 	
@@ -95,8 +115,10 @@ public class Cliente {
 		String totBytes = in.readLine();
 		packets = Integer.parseInt(numPackets.split(":")[1]);
 		bytes = Integer.parseInt(totBytes.split(":")[1]);
-		packetSize = bytes/packets;
+		packetSize = (bytes-(bytes%packets))/packets;
 		file = new byte[bytes];
+		System.out.println("Packets: "+ packets + " - Bytes: "+bytes +" - PSize: " + packetSize);
+		
 	}
 	
 	
@@ -111,7 +133,9 @@ public class Cliente {
 	}
 	
 	public void writeFile() throws IOException {
-		FileOutputStream outStream = new FileOutputStream(DATA+selectedFile);
+		File f = new File(DATA+selectedFile);
+		f.createNewFile();
+		FileOutputStream outStream = new FileOutputStream(f);
 		outStream.write(bytes);
 		outStream.close();
 		reset();
@@ -119,6 +143,12 @@ public class Cliente {
 	
 	public void pauseDownload() {
 		out.println(PAUSE);
+		try {
+			dm.wait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void resumeDownload() throws Exception{
@@ -126,6 +156,7 @@ public class Cliente {
 		out.println(selectedFile);
 		String numPackets = in.readLine();
 		String totBytes = in.readLine();
+		dm.notify();
 	}
 	
 	public void closeConnection(){

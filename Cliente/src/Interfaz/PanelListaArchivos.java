@@ -78,10 +78,10 @@ public class PanelListaArchivos extends JPanel implements ListSelectionListener
      * Actualiza la lista de perros que se est� mostrando
      * @param nuevaLista es una lista con los perros que deben mostrarse
      */
-    public void refrescarLista(  )
+    public void refrescarLista(String[] archivos  )
     {
-//        listaAnimales.setListData( finca.darAnimalesFinca().toArray( ) );
-//        listaAnimales.setSelectedIndex( 0 );
+        listaArchivos.setListData( archivos );
+        listaArchivos.setSelectedIndex( 0 );
     }
      public void ordenarPor( ArrayList lista )
     {
@@ -105,27 +105,20 @@ public class PanelListaArchivos extends JPanel implements ListSelectionListener
      */
     public void valueChanged( ListSelectionEvent e )
     {
-//        if( listaAnimales.getSelectedValue( ) != null )
-//        {
-//            Animal p = ( Animal )listaAnimales.getSelectedValue( );
-//            principal.actualizarListaHijos(p);
-//            try {
-//				principal.verDatosAnimal( p );
-//			} catch (ParseException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//        }
+        if( listaArchivos.getSelectedValue( ) != null )
+        {
+            String p = ( String )listaArchivos.getSelectedValue( );
+        }
     }
-//    public Animal getAnimalSeleccionado()
-//    {
-//    	if( listaAnimales.getSelectedValue( ) != null )
-//        {
-//            Animal p = ( Animal )listaAnimales.getSelectedValue( );
-//            return p;
-//           
-//        }
-//    	return null;
-//    	
-//    }
+    public String getArchivoSeleccionado()
+    {
+    	if( listaArchivos.getSelectedValue( ) != null )
+        {
+            String p = ( String )listaArchivos.getSelectedValue( );
+            return p;
+           
+        }
+    	return null;
+    	
+    }
 }
