@@ -158,7 +158,11 @@ public class InterfazCLiente extends JFrame implements DownloadListener{
      }
      
      
-
+    @Override
+	public void downloadCompleted() {
+		// TODO Auto-generated method stub
+		// AQUI: hacer lo necesario para deshabilitar el boton de pausa y habilitar el de descarga
+	}
    
    
 
@@ -172,9 +176,5 @@ public class InterfazCLiente extends JFrame implements DownloadListener{
       
     }
 
-	@Override
-	public void downloadCompleted() {
-		// TODO Auto-generated method stub
-		// AQUI: hacer lo necesario para deshabilitar el boton de pausa y habilitar el de descarga
-	}
+	
 }
