@@ -152,6 +152,7 @@ public class Cliente {
 	public void writeFile() throws IOException {
 		outStream.close();
 		listener.downloadCompleted();
+		System.out.println("Done");
 		reset();
 	}
 	
