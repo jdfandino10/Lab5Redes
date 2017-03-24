@@ -23,13 +23,13 @@ import java.util.concurrent.TimeoutException;
 
 public class Servidor {
 	
-	public Servidor(int conexiones, int bufferSize) throws IOException {
+	public Servidor(int conexiones, int bufferSize, int packetSize, int minuteLimit) throws IOException {
 		
 		ServerSocket sk = new ServerSocket();
 		sk.setReceiveBufferSize(bufferSize);
 		sk.bind(new InetSocketAddress(8010));		
 		for(int i=0; i<conexiones; i++){
-			new Connection(sk).start();
+			new Connection(sk, packetSize, minuteLimit).start();
 		}
 	}
 }

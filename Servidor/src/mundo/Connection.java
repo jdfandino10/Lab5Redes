@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Connection extends Thread {
 	
-	public static final int PACKET_SIZE = 8000;
-	public static final int MINUTE_LIMIT = 1;
+	private final int PACKET_SIZE;
+	public final int MINUTE_LIMIT;
 	public static final String DATA = "./data/";
 	
 	public static final String HELLO = "hello";
@@ -49,8 +49,10 @@ public class Connection extends Thread {
 	private FileChannel channel;
 
 	
-	public Connection(ServerSocket sk){
-		this.sk=sk;
+	public Connection(ServerSocket sk, int packetSize, int minuteLimit){
+		this.sk = sk;
+		PACKET_SIZE = packetSize;
+		MINUTE_LIMIT = minuteLimit;
 	}
 	
 	public void run() {
@@ -64,7 +66,7 @@ public class Connection extends Thread {
 					readMsg();	
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Se ha cerrado la conexión.");
 			}
 		}
 	}
@@ -82,16 +84,13 @@ public class Connection extends Thread {
 		String msg;
 		try {
 			msg = handler.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-			System.out.println(msg);
 			processMsg(msg);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			handler.cancel(true);
 			try {
 				socket.close();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+
 			}
 		}
 		executor.shutdownNow();
@@ -158,25 +157,12 @@ public class Connection extends Thread {
 			int off = packetNum*PACKET_SIZE;
 			int len = PACKET_SIZE;
 			len = (int) Math.min(len, totBytes-off);
-			OutputStream console = new OutputStream() {
-				
-				@Override
-				public void write(int arg0) throws IOException {
-					// TODO Auto-generated method stub
-					System.out.println(arg0);
-				}
-			};
-			System.out.println("len: "+len);
-			System.out.println("totBytes: "+totBytes);
-			System.out.println("off: "+off);
 			MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, off, len);
 			ByteBuffer buf = buffer.asReadOnlyBuffer();
 			byte[] b = new byte[buf.remaining()];
 			buf.get(b);
 			os.write(b);
 			os.flush();
-//			console.write(b);
-//			console.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -195,7 +181,6 @@ public class Connection extends Thread {
 			pw.println(PACKETS+SEPARATOR+totPacket);
 			pw.println(TOTBYTES+SEPARATOR+totBytes);
 			pw.println(PACKSIZE+SEPARATOR+PACKET_SIZE);
-			System.out.println("Packets: "+ totPacket + " - Bytes: "+totBytes +" - PSize: " + PACKET_SIZE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
