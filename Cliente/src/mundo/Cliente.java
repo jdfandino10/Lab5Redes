@@ -40,8 +40,10 @@ public class Cliente {
 	private boolean downloadStart;
 	private boolean paused;
 	private FileOutputStream outStream;
+	private DownloadListener listener;
 	
-	public Cliente() {
+	public Cliente(DownloadListener listener) {
+		this.listener = listener;
 		reset();
 		connect();
 	}
@@ -148,6 +150,7 @@ public class Cliente {
 	
 	public void writeFile() throws IOException {
 		outStream.close();
+		listener.downloadCompleted();
 		reset();
 	}
 	

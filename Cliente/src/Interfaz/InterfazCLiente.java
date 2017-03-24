@@ -25,7 +25,7 @@ import mundo.*;
 /**
  * Es la clase principal de la interfaz
  */
-public class InterfazCLiente extends JFrame {
+public class InterfazCLiente extends JFrame implements DownloadListener{
     // -----------------------------------------------------------------
     // Constantes
     // -----------------------------------------------------------------
@@ -80,7 +80,7 @@ public class InterfazCLiente extends JFrame {
      */
     public InterfazCLiente() {
 
-        cliente = new Cliente();
+        cliente = new Cliente(this);
        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Cliente FTP");
@@ -171,4 +171,10 @@ public class InterfazCLiente extends JFrame {
         InterfazCLiente interfaz = new InterfazCLiente();
       
     }
+
+	@Override
+	public void downloadCompleted() {
+		// TODO Auto-generated method stub
+		// AQUI: hacer lo necesario para deshabilitar el boton de pausa y habilitar el de descarga
+	}
 }
