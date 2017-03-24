@@ -145,6 +145,7 @@ public class Cliente {
 		flujo.read(b, 0, len);
 		outStream.write(b);
 		outStream.flush();
+		System.out.println("Packete "+packetIndex+" recibido: "+Arrays.toString(b));
 		actualPacket++;
 	}
 	
