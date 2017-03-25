@@ -68,6 +68,8 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
     
     private JLabel isConnected;
     
+    private JLabel fileDownloading;
+    
 
  
 
@@ -104,13 +106,18 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
 
         add(panelListas, BorderLayout.CENTER);
         
-        JPanel inferior = new JPanel(new GridLayout(2, 1));
+        JPanel fileInfo = new JPanel(new GridLayout(1, 2));
+        fileDownloading = new JLabel("seleccione un archivo");
+        fileInfo.add(new JLabel("Estado descarga: "));
+        fileInfo.add(fileDownloading);
+        JPanel inferior = new JPanel(new GridLayout(3, 1));
         panelExtension = new PanelExtension(this);
         JPanel label = new JPanel(new GridLayout(1, 2));
         JLabel connected = new JLabel("Connected: ");
         isConnected = new JLabel("NO");
         label.add(connected);
         label.add(isConnected);
+        inferior.add(fileInfo);
         inferior.add(panelExtension);
         inferior.add(label);
         add(inferior, BorderLayout.SOUTH);
@@ -161,6 +168,7 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
     	 try {
 			if(!cliente.downloadHasStarted()) cliente.selectFile(panelArchivos.getArchivoSeleccionado());
 			cliente.startDownload();
+			fileDownloading.setText("Descargando "+cliente.getSelectedFile());
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -173,6 +181,7 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
      {
     	 try {
 			cliente.pauseDownload();
+			fileDownloading.setText("pausa");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -205,6 +214,7 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
     	
 		actualizarListaArchivosDescargados();
 		panelExtension.changeSateButtons();
+		fileDownloading.setText("seleccione un archivo");
 	}
    
     public void dispose() {

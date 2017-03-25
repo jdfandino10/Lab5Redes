@@ -53,6 +53,10 @@ public class Cliente {
 		chk.start();
 	}
 	
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	
 	public void startDownload() throws Exception{
 		if (downloadStart) {
 			System.out.println("va a resumir descarga");
