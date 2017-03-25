@@ -24,6 +24,8 @@ public class DownloadManager extends Thread{
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				error=true;
+				System.out.println("Descarga incompleta");
+				break;
 			}
 		}
 		if(!error) {
@@ -31,7 +33,6 @@ public class DownloadManager extends Thread{
 				c.writeFile();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
