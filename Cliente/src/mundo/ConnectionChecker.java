@@ -18,7 +18,7 @@ public class ConnectionChecker extends Thread{
 		}
 		while(true){
 			if(!c.socketConnection()){
-				if(!c.downloadHasStarted() || c.isPaused()) listener.changeConnectionState(c.goodConnection());
+				if(!c.downloadHasStarted() || c.isPaused()) listener.changeConnectionState(c.goodConnection() || c.connect());
 				else listener.changeConnectionState(true);
 				try {
 					this.sleep(1000);

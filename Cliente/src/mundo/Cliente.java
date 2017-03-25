@@ -78,7 +78,7 @@ public class Cliente {
 		return downloadStart;
 	}
 	
-	public boolean connect() {
+	public synchronized boolean connect() {
 		try{
 			server = new Socket(HOST, PORT);
 			in = new BufferedReader( new InputStreamReader(server.getInputStream()) );
