@@ -141,10 +141,8 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
      * Actualiza la lista de perros mostrada.
      */
     private void actualizarListaArchivos() {
-    	System.out.println("entro");
         try {
         	String[] files = cliente.requestFiles();
-        	System.out.println(files);
         	panelArchivos.refrescarLista(files);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -153,7 +151,6 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
     }
     
     private void actualizarListaArchivosDescargados() {
-    	System.out.println("entro");
         try {
         
         	panelDescargas.refrescarLista(cliente.getFiles());
@@ -234,7 +231,6 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
     
     public static void main(String[] args) {
         InterfazCLiente interfaz = new InterfazCLiente();
-      
     }
 
 	

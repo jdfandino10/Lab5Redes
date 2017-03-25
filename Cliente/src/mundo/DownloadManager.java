@@ -12,6 +12,7 @@ public class DownloadManager extends Thread{
 	
 	public void run() {
 		boolean error = false;
+		long tInicial = System.currentTimeMillis();
 		while (!c.doneDownload()){
 			int p = c.getPacketIndexToGet();
 			try {
@@ -29,6 +30,7 @@ public class DownloadManager extends Thread{
 			}
 		}
 		if(!error) {
+			System.out.println("Tiempo descarga: "+(System.currentTimeMillis()-tInicial));
 			try {
 				c.writeFile();
 			} catch (IOException e) {

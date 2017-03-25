@@ -77,8 +77,13 @@ public class Connection extends Thread {
 		Future<String> handler = executor.submit(new Callable() {
 		    @Override
 		    public String call() throws Exception {
-		        return br.readLine();
-		        
+		    	String ans = br.readLine();
+		    	
+		    	while(ans.equals(HEARTBEAT)){
+		    		sendOk();
+		    		ans = br.readLine();
+		    	}
+		        return ans;
 		    }
 		});
 		String msg;

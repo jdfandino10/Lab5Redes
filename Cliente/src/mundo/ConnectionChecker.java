@@ -11,17 +11,16 @@ public class ConnectionChecker extends Thread{
 
 	public void run() {
 		try {
-			this.sleep(2000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
 		}
 		while(true){
 			if(!c.socketConnection()){
-				if(!c.downloadHasStarted() || c.isPaused()) listener.changeConnectionState(c.goodConnection() || c.connect());
+				if(!c.downloadHasStarted() || c.isPaused()) listener.changeConnectionState(c.goodConnection());
 				else listener.changeConnectionState(true);
 				try {
-					this.sleep(1000);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					break;
 				}
