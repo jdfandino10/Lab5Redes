@@ -2,6 +2,9 @@
 package Interfaz;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.*;
 
 import javax.swing.*;
@@ -13,7 +16,7 @@ import mundo.*;
 /**
  * Es el panel donde se muestra la lista de perros y est�n los botones para interactuar con la lista
  */
-public class PanelListaDescargas extends JPanel implements ListSelectionListener
+public class PanelListaDescargas extends JPanel implements ListSelectionListener, MouseListener
 {
     // -----------------------------------------------------------------
     // Atributos
@@ -61,6 +64,7 @@ public class PanelListaDescargas extends JPanel implements ListSelectionListener
         listaDescarga.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         listaDescarga.addListSelectionListener( this );
         listaDescarga.setFont((new Font("Arial",Font.BOLD,32)));
+        listaDescarga.addMouseListener(this);
 
         scroll = new JScrollPane( listaDescarga );
         scroll.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
@@ -78,9 +82,9 @@ public class PanelListaDescargas extends JPanel implements ListSelectionListener
      * Actualiza la lista de perros que se est� mostrando
      * @param nuevaLista es una lista con los perros que deben mostrarse
      */
-    public void refrescarLista( ArrayList nuevaLista )
+    public void refrescarLista( File[] files )
     {
-        listaDescarga.setListData( nuevaLista.toArray( ) );
+        listaDescarga.setListData( files );
         listaDescarga.setSelectedIndex( 0 );
     }
 
@@ -109,4 +113,48 @@ public class PanelListaDescargas extends JPanel implements ListSelectionListener
 //              
 //         }
     }
+    
+    public File getArchivoSeleccionado()
+    {
+    	if( listaDescarga.getSelectedValue( ) != null )
+        {
+            File p = ( File )listaDescarga.getSelectedValue( );
+            return p;
+           
+        }
+    	return null;
+    	
+    }
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getClickCount() == 2){
+			principal.openFile(getArchivoSeleccionado());
+		}
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

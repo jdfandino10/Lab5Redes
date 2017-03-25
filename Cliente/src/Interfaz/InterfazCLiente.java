@@ -25,7 +25,7 @@ import mundo.*;
 /**
  * Es la clase principal de la interfaz
  */
-public class InterfazCLiente extends JFrame implements DownloadListener{
+public class InterfazCLiente extends JFrame implements DownloadListener, ConnectionStateListener{
     // -----------------------------------------------------------------
     // Constantes
     // -----------------------------------------------------------------
@@ -66,6 +66,8 @@ public class InterfazCLiente extends JFrame implements DownloadListener{
      */
     private PanelExtension panelExtension;
     
+    private JLabel isConnected;
+    
 
  
 
@@ -80,7 +82,7 @@ public class InterfazCLiente extends JFrame implements DownloadListener{
      */
     public InterfazCLiente() {
 
-        cliente = new Cliente(this);
+        
        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Cliente FTP");
@@ -101,18 +103,27 @@ public class InterfazCLiente extends JFrame implements DownloadListener{
        
 
         add(panelListas, BorderLayout.CENTER);
-
+        
         JPanel inferior = new JPanel(new GridLayout(2, 1));
         panelExtension = new PanelExtension(this);
+        JPanel label = new JPanel(new GridLayout(1, 2));
+        JLabel connected = new JLabel("Connected: ");
+        isConnected = new JLabel("NO");
+        label.add(connected);
+        label.add(isConnected);
         inferior.add(panelExtension);
+        inferior.add(label);
         add(inferior, BorderLayout.SOUTH);
-
+        
+        cliente = new Cliente(this, this);
         actualizarListaArchivos();
+        actualizarListaArchivosDescargados();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         setSize(500, 700);
         setVisible(true);
         setResizable(true);
+        
 
     }
 
@@ -134,11 +145,23 @@ public class InterfazCLiente extends JFrame implements DownloadListener{
 
     }
     
+    private void actualizarListaArchivosDescargados() {
+    	System.out.println("entro");
+        try {
+        
+        	panelDescargas.refrescarLista(cliente.getFiles());
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+		}
+
+    }
+    
      public void startDownload()
      {
     	 try {
 			if(!cliente.downloadHasStarted()) cliente.selectFile(panelArchivos.getArchivoSeleccionado());
 			cliente.startDownload();
+		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(this, e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -157,13 +180,37 @@ public class InterfazCLiente extends JFrame implements DownloadListener{
 		}
      }
      
+     public void changeConnectionState(boolean isCon){
+    	 if(isCon){
+    		 isConnected.setText("SI");
+    	 }
+    	 else {
+    		 isConnected.setText("NO");
+    	 }
+     }
+     
+     public void openFile(File file)
+     {
+    	 try {
+			Desktop.getDesktop().open(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+     }
+     
      
     @Override
 	public void downloadCompleted() {
-		// TODO Auto-generated method stub
-		// AQUI: hacer lo necesario para deshabilitar el boton de pausa y habilitar el de descarga
+    	
+		actualizarListaArchivosDescargados();
+		panelExtension.changeSateButtons();
 	}
    
+    public void dispose() {
+    	cliente.closeConnection();
+    	super.dispose();
+    }
    
 
    

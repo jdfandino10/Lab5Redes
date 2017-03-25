@@ -41,11 +41,16 @@ public class Cliente {
 	private boolean paused;
 	private FileOutputStream outStream;
 	private DownloadListener listener;
+	private ConnectionStateListener conListener;
+	private ConnectionChecker chk;
 	
-	public Cliente(DownloadListener listener) {
+	public Cliente(DownloadListener listener, ConnectionStateListener conListener) {
 		this.listener = listener;
+		this.conListener = conListener;
 		reset();
 		connect();
+		chk = new ConnectionChecker(conListener, this);
+		chk.start();
 	}
 	
 	public void startDownload() throws Exception{
@@ -69,7 +74,7 @@ public class Cliente {
 		paused = false;
 	}
 	
-	public boolean downloadHasStarted() {
+	public synchronized boolean downloadHasStarted() {
 		return downloadStart;
 	}
 	
@@ -89,7 +94,7 @@ public class Cliente {
 		return actualPacket;
 	}
 	
-	public boolean goodConnection() {
+	public synchronized boolean goodConnection() {
 		
 		try {
 			out.println(HEARTBEAT);
@@ -185,6 +190,8 @@ public class Cliente {
 	public void closeConnection(){
 		try {
 			out.println(BYE);
+			chk.interrupt();
+			if(dm!=null) dm.interrupt();
 			server.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -195,5 +202,19 @@ public class Cliente {
 	public boolean doneDownload() {
 		if(packets == 0) return false;
 		return packets==actualPacket;
+	}
+
+	public File[] getFiles() {
+		File folder = new File(DATA);
+		File[] listOfFiles = folder.listFiles();
+
+		    for (int i = 0; i < listOfFiles.length; i++) {
+		      if (listOfFiles[i].isFile()) {
+		        System.out.println("File " + listOfFiles[i].getName());
+		      } else if (listOfFiles[i].isDirectory()) {
+		        System.out.println("Directory " + listOfFiles[i].getName());
+		      }
+		    }
+		   return listOfFiles;
 	}
 }

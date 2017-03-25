@@ -31,5 +31,6 @@ public class Servidor {
 		for(int i=0; i<conexiones; i++){
 			new Connection(sk, packetSize, minuteLimit).start();
 		}
+		System.out.println("Servidor creado. Esperando conexiones.");
 	}
 }

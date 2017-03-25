@@ -103,6 +103,13 @@ public class PanelExtension extends JPanel implements ActionListener
         add( botonDetenerDescarga );
        
     }
+    
+    public void changeSateButtons()
+    {
+
+    	botonComenzarDescarga.setEnabled(true);
+    	botonDetenerDescarga.setEnabled(false);
+    }
 
     /**
      * Este m�todo se llama cuando se presiona uno de los botones.
@@ -125,4 +132,5 @@ public class PanelExtension extends JPanel implements ActionListener
         }
     
     }
+    
 }
