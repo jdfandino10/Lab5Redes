@@ -85,7 +85,6 @@ public class Cliente {
 			out = new PrintWriter(server.getOutputStream(), true);
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -111,7 +110,6 @@ public class Cliente {
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			return false;
 		}
 		return true;

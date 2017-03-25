@@ -24,7 +24,6 @@ public class DownloadManager extends Thread{
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				error=true;
-				e.printStackTrace();
 			}
 		}
 		if(!error) {

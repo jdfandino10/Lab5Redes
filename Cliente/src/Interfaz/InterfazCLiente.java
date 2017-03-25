@@ -208,8 +208,12 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
 	}
    
     public void dispose() {
-    	cliente.closeConnection();
-    	super.dispose();
+    	if(!cliente.downloadHasStarted() || cliente.isPaused()){
+    		cliente.closeConnection();
+    		super.dispose();
+    	}else {
+    		JOptionPane.showMessageDialog(this, "Detener la descarga antes de cerrar", "Alerta", JOptionPane.INFORMATION_MESSAGE);
+    	}
     }
    
 
