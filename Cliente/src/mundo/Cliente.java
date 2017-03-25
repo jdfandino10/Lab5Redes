@@ -187,6 +187,10 @@ public class Cliente {
 		}
 	}
 	
+	public boolean socketConnection() {
+		return server.isClosed();
+	}
+	
 	public void closeConnection(){
 		try {
 			out.println(BYE);
