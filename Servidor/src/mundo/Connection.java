@@ -25,6 +25,7 @@ public class Connection extends Thread {
 	
 	private final int PACKET_SIZE;
 	public final int MINUTE_LIMIT;
+	private final int BUFFER_SIZE;
 	public static final String DATA = "./data/";
 	
 	public static final String HELLO = "hello";
@@ -49,16 +50,18 @@ public class Connection extends Thread {
 	private FileChannel channel;
 
 	
-	public Connection(ServerSocket sk, int packetSize, int minuteLimit){
+	public Connection(ServerSocket sk, int packetSize, int minuteLimit, int bufferSize){
 		this.sk = sk;
 		PACKET_SIZE = packetSize;
 		MINUTE_LIMIT = minuteLimit;
+		BUFFER_SIZE = bufferSize;
 	}
 	
 	public void run() {
 		while(true){
 			try {
 				socket = sk.accept();
+				socket.setSendBufferSize(BUFFER_SIZE);
 				System.out.println("Conexion Establecida");
 				br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				os = socket.getOutputStream();
