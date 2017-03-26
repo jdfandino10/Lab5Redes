@@ -50,7 +50,7 @@ public class Cliente {
 		reset();
 		connect();
 		chk = new ConnectionChecker(conListener, this);
-//		chk.start();
+		chk.start();
 	}
 	
 	public String getSelectedFile() {
