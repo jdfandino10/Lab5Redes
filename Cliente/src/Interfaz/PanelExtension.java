@@ -37,6 +37,7 @@ public class PanelExtension extends JPanel implements ActionListener
      * El comando para el bot�n 2
      */
     private final String DETENER = "Detener";
+    private final String CONECTAR = "Conectar";
     
    
      
@@ -88,19 +89,26 @@ public class PanelExtension extends JPanel implements ActionListener
     {
         setBorder( new TitledBorder( "Acciones" ) );
 
-        setLayout( new GridLayout(1, 2) );
+        setLayout( new GridLayout(1, 3) );
         botonComenzarDescarga = new JButton( "Descargar/Continuar");
         botonComenzarDescarga.setActionCommand( COMENZAR );
         botonComenzarDescarga.addActionListener( this );
+        botonComenzarDescarga.setEnabled(false);
         
         botonDetenerDescarga = new JButton( "Detener" );
         botonDetenerDescarga.setActionCommand( DETENER );
         botonDetenerDescarga.addActionListener( this );
+        botonDetenerDescarga.setEnabled(false);
+        
+        JButton botonConectar = new JButton( CONECTAR );
+        botonConectar.setActionCommand( CONECTAR );
+        botonConectar.addActionListener( this );
         
        
         
         add( botonComenzarDescarga );
         add( botonDetenerDescarga );
+        add( botonConectar );
        
     }
     
@@ -108,6 +116,11 @@ public class PanelExtension extends JPanel implements ActionListener
     {
 
     	botonComenzarDescarga.setEnabled(true);
+    	botonDetenerDescarga.setEnabled(false);
+    }
+    
+    public void diableButtons() {
+    	botonComenzarDescarga.setEnabled(false);
     	botonDetenerDescarga.setEnabled(false);
     }
 
@@ -129,6 +142,13 @@ public class PanelExtension extends JPanel implements ActionListener
         	botonComenzarDescarga.setEnabled(true);
         	botonDetenerDescarga.setEnabled(false);
             principal.stopDownload();
+        }
+        else if( CONECTAR.equals( comando ) )
+        {
+            if (principal.conectar()==1){
+            	botonComenzarDescarga.setEnabled(true);
+            	botonDetenerDescarga.setEnabled(false);
+            }
         }
     
     }

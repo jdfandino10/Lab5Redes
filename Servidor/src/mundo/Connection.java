@@ -71,6 +71,7 @@ public class Connection extends Thread {
 			} catch (IOException e) {
 				System.out.println("Se ha cerrado la conexión.");
 			}
+			System.out.println("Se ha cerrado la conexión.");
 		}
 	}
 	

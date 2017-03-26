@@ -8,9 +8,9 @@ public class Main {
 	private static final int MEDIA = 1;
 	private static final int ALTA = 2;
 
-	private static int T_CONEXION = MEDIA; //importancia ALTA, MEDIA o BAJA
-	private static int BAJA_LATENCIA = MEDIA; //importancia ALTA, MEDIA o BAJA
-	private static int ALTO_ANCHO = ALTA; //importancia ALTA, MEDIA o BAJA
+	private static int T_CONEXION = ALTA; //importancia ALTA, MEDIA o BAJA
+	private static int BAJA_LATENCIA = ALTA; //importancia ALTA, MEDIA o BAJA
+	private static int ALTO_ANCHO = MEDIA; //importancia ALTA, MEDIA o BAJA
 	
 	private static boolean test10Buffer = false;
 	private static boolean test500Buffer = false;

@@ -123,6 +123,7 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
         add(inferior, BorderLayout.SOUTH);
         
         cliente = new Cliente(this, this);
+        if(conectar()==1) panelExtension.changeSateButtons();
         actualizarListaArchivos();
         actualizarListaArchivosDescargados();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -178,7 +179,7 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
      {
     	 try {
 			cliente.pauseDownload();
-			fileDownloading.setText("pausa");
+			fileDownloading.setText("pausa archivo "+cliente.getSelectedFile());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -192,6 +193,7 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
     	 }
     	 else {
     		 isConnected.setText("NO");
+    		 panelExtension.diableButtons();
     	 }
      }
      
@@ -221,6 +223,24 @@ public class InterfazCLiente extends JFrame implements DownloadListener, Connect
     	}else {
     		JOptionPane.showMessageDialog(this, "Detener la descarga antes de cerrar", "Alerta", JOptionPane.INFORMATION_MESSAGE);
     	}
+    }
+    
+    public int conectar() {
+    	String msg = "";
+    	int ans;
+    	if (cliente.goodConnection()){
+    		msg = "Ya esta conectado";
+    		ans = 0;
+    	}
+    	else if(cliente.connect()){
+    		msg = "Conexion establecida";
+    		ans=1;
+    	}else {
+    		msg = "No se ha podido establecer la conexion";
+    		ans=-1;
+    	}
+    	JOptionPane.showMessageDialog(this, msg, "Conexion", JOptionPane.INFORMATION_MESSAGE);
+    	return ans;
     }
    
 

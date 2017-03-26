@@ -48,7 +48,6 @@ public class Cliente {
 		this.listener = listener;
 		this.conListener = conListener;
 		reset();
-		connect();
 		chk = new ConnectionChecker(conListener, this);
 		chk.start();
 	}
@@ -98,7 +97,7 @@ public class Cliente {
 	}
 	
 	public synchronized boolean goodConnection() {
-		
+		if(out==null) return false;
 		try {
 			out.println(HEARTBEAT);
 			char c;
@@ -120,13 +119,13 @@ public class Cliente {
 	}
 	
 	public String[] requestFiles() throws Exception {
-		if (!goodConnection() && !connect()) throw new Exception("No se puede conectar al servidor");
+		if (!goodConnection()) throw new Exception("No esta conectado, reestablezca la conexion");
 		out.println(HELLO);
 		return in.readLine().split(";");
 	}
 	
 	public void selectFile(String fileName) throws Exception{
-		if (!goodConnection() && !connect()) throw new Exception("No se puede conectar al servidor");
+		if (!goodConnection()) throw new Exception("No esta conectado, reestablezca la conexion");
 		out.println(fileName);
 		selectedFile = fileName;
 		String numPackets = in.readLine();
@@ -142,8 +141,8 @@ public class Cliente {
 	}
 	
 	
-	public void requestPacket(int packetIndex) throws Exception{
-		if (!goodConnection() && !connect()) throw new Exception("No se puede conectar al servidor");
+	public synchronized void requestPacket(int packetIndex) throws Exception{
+		//if (!goodConnection()) throw new Exception("No se puede conectar al servidor");
 		out.println(CONTINUE+":"+packetIndex);
 		DataInputStream flujo = new DataInputStream(server.getInputStream());
 		int off = packetIndex*packetSize;
@@ -173,7 +172,7 @@ public class Cliente {
 	}
 	
 	public synchronized void resumeDownload() throws Exception{
-		if (!goodConnection() && !connect()) throw new Exception("No se puede conectar al servidor");
+		if (!goodConnection()) throw new Exception("No se puede conectar al servidor");
 		out.println(selectedFile);
 		in.readLine();
 		in.readLine();
@@ -190,15 +189,16 @@ public class Cliente {
 	}
 	
 	public boolean socketConnection() {
+		if(server==null) return true;
 		return server.isClosed();
 	}
 	
 	public void closeConnection(){
 		try {
-			out.println(BYE);
-			chk.interrupt();
+			if(out!=null)out.println(BYE);
+			if(chk!=null)chk.interrupt();
 			if(dm!=null) dm.interrupt();
-			server.close();
+			if(server!=null)server.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
